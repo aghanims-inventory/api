@@ -21,6 +21,7 @@ Log.Logger = new LoggerConfiguration()
 builder.Services
     .AddApiVersioningSettings()
     .AddEndpointsApiExplorer()
+    .AddDatabaseSettings(builder.Configuration)
     .AddOpenApi();
 
 var app = builder.Build();
