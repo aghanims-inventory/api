@@ -1,13 +1,26 @@
 using AghanimsInventoryApi.Extensions;
 using Scalar.AspNetCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .Enrich.WithProperty("Application", "API")
+    .Enrich.WithProperty("Host", Environment.MachineName)
+    .Enrich.WithProperty("Environment", builder.Environment.EnvironmentName)
+    .Enrich.WithProperty("ProjectName", "AghanimsInventory")
+    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Error)
+    .MinimumLevel.Override("Microsoft.Hosting.Lifetime", Serilog.Events.LogEventLevel.Information)
+    .MinimumLevel.Override("System.Net.Http.HttpClient", Serilog.Events.LogEventLevel.Warning)
+    .WriteTo.Console()
+    .CreateLogger();
+
 builder.Services
-    .AddEndpointsApiExplorer()
     .AddApiVersioningSettings()
+    .AddEndpointsApiExplorer()
     .AddOpenApi();
 
 var app = builder.Build();
