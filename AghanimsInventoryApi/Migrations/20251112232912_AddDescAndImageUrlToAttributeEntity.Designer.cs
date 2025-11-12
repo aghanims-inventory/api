@@ -3,6 +3,7 @@ using AghanimsInventoryApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AghanimsInventoryApi.Migrations
 {
     [DbContext(typeof(AghanimsInventoryDbContext))]
-    partial class AghanimsInventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251112232912_AddDescAndImageUrlToAttributeEntity")]
+    partial class AddDescAndImageUrlToAttributeEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,8 +38,7 @@ namespace AghanimsInventoryApi.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("ImageUrl")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()

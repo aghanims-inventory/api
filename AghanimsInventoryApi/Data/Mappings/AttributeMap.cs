@@ -17,5 +17,13 @@ public class AttributeMap : IEntityTypeConfiguration<Entities.Attribute>
         builder.Property(x => x.Name)
             .IsRequired()
             .HasMaxLength(30);
+
+        builder.Property(x => x.Description)
+            .IsRequired()
+            .HasMaxLength(255);
+
+        builder.Property(x => x.ImageUrl)
+            .IsRequired(false)
+            .HasMaxLength(255);
     }
 }

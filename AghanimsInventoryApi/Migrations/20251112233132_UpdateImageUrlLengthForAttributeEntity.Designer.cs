@@ -3,6 +3,7 @@ using AghanimsInventoryApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AghanimsInventoryApi.Migrations
 {
     [DbContext(typeof(AghanimsInventoryDbContext))]
-    partial class AghanimsInventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251112233132_UpdateImageUrlLengthForAttributeEntity")]
+    partial class UpdateImageUrlLengthForAttributeEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
