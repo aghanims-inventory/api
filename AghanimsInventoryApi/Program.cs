@@ -24,6 +24,7 @@ builder.Services
     .AddApiVersioningSettings()
     .AddEndpointsApiExplorer()
     .AddDatabaseSettings(builder.Configuration)
+    .AddMemoryCache()
     .AddOpenApi();
 
 var app = builder.Build();

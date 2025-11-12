@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AghanimsInventoryApi.Data.Mappings;
+using Microsoft.EntityFrameworkCore;
 
 namespace AghanimsInventoryApi.Data;
 
@@ -11,6 +12,10 @@ public class AghanimsInventoryDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.ApplyConfiguration(new AttributeMap());
+
         base.OnModelCreating(modelBuilder);
     }
+
+    public DbSet<Entities.Attribute> Attributes { get; set; }
 }
