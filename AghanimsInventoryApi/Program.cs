@@ -18,6 +18,8 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateLogger();
 
+builder.Host.UseSerilog();
+
 builder.Services
     .AddApiVersioningSettings()
     .AddEndpointsApiExplorer()
