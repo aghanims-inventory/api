@@ -1,12 +1,14 @@
+using AghanimsInventoryApi.Extensions;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddEndpointsApiExplorer();
-
-builder.Services.AddOpenApi();
+builder.Services
+    .AddEndpointsApiExplorer()
+    .AddApiVersioningSettings()
+    .AddOpenApi();
 
 var app = builder.Build();
 
@@ -18,7 +20,7 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference(options =>
     {
         options
-            .WithTitle("Aghanim's Inventory Api Documentation")
+            .WithTitle("Aghanim's Inventory API Documentation")
             .WithTheme(ScalarTheme.Default)
             .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
             .AddPreferredSecuritySchemes("Bearer")

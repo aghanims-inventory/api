@@ -2,8 +2,10 @@
 
 namespace AghanimsInventoryApi.Controllers.V1;
 
-[Route("heroes")]
 [ApiController]
+[ApiVersion("1.0")]
+[Route("v{version:apiVersion}/heroes")]
+[Tags("Heroes")]
 public class HeroV1Controller : ControllerBase
 {
     public HeroV1Controller()
