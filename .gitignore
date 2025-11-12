@@ -1,0 +1,6 @@
+.vs
+bin
+obj 
+*.csproj.user
+storage/data
+.DS_Store
