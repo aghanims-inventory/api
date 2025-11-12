@@ -31,8 +31,10 @@ if (app.Environment.IsDevelopment())
             .ShowSidebar = true;
     });
 }
-
-app.UseHttpsRedirection();
+else
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseAuthentication();
 
