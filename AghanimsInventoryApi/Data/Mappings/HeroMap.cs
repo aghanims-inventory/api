@@ -20,7 +20,8 @@ public class HeroMap : IEntityTypeConfiguration<Hero>
             .HasMaxLength(30);
 
         builder.Property(x => x.ImageUrl)
-            .IsRequired();
+            .IsRequired(false)
+            .HasMaxLength(255);
 
         builder.Property(x => x.AttributeId)
             .IsRequired();
