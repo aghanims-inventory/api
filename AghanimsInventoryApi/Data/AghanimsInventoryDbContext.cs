@@ -22,6 +22,7 @@ public class AghanimsInventoryDbContext : DbContext
         modelBuilder.ApplyConfiguration(new HeroStatMap());
         modelBuilder.ApplyConfiguration(new RoleMap());
         modelBuilder.ApplyConfiguration(new StatMap());
+        modelBuilder.ApplyConfiguration(new StatTypeMap());
 
         base.OnModelCreating(modelBuilder);
     }
@@ -41,4 +42,6 @@ public class AghanimsInventoryDbContext : DbContext
     public DbSet<Role> Roles { get; set; }
 
     public DbSet<Stat> Stats { get; set; }
+
+    public DbSet<StatType> StatTypes { get; set; }
 }
