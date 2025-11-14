@@ -11,4 +11,6 @@ public class Stat
     public bool IsPercentage { get; set; }
 
     public string ImageUrl { get; set; }
+
+    public int StatTypeId { get; set; }
 }

@@ -21,13 +21,10 @@ public class HeroStatMap : IEntityTypeConfiguration<HeroStat>
         builder.Property(x => x.StatId)
             .IsRequired();
 
-        builder.Property(x => x.StatTypeId)
-            .IsRequired();
-
         builder.Property(x => x.HeroId)
             .IsRequired();
 
-        builder.HasIndex(x => new { x.StatId, x.StatTypeId, x.HeroId })
+        builder.HasIndex(x => new { x.StatId, x.HeroId })
             .IsUnique();
     }
 }

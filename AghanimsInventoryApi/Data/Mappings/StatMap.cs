@@ -30,5 +30,11 @@ public class StatMap : IEntityTypeConfiguration<Stat>
         builder.Property(x => x.ImageUrl)
             .IsRequired(false)
             .HasMaxLength(255);
+
+        builder.Property(x => x.StatTypeId)
+            .IsRequired();
+
+        builder.HasIndex(x => x.Name)
+            .IsUnique();
     }
 }

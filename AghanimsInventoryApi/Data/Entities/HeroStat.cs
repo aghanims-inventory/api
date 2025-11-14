@@ -8,7 +8,5 @@ public class HeroStat
 
     public int StatId { get; set; }
 
-    public int StatTypeId { get; set; }
-
     public int HeroId { get; set; }
 }
