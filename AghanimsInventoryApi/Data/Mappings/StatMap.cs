@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AghanimsInventoryApi.Data.Mappings;
 
-public class HeroMap : IEntityTypeConfiguration<Hero>
+public class StatMap : IEntityTypeConfiguration<Stat>
 {
-    public void Configure(EntityTypeBuilder<Hero> builder)
+    public void Configure(EntityTypeBuilder<Stat> builder)
     {
-        builder.ToTable("Heroes");
+        builder.ToTable("Stats");
 
         builder.HasKey(x => x.Id);
 
@@ -17,16 +17,18 @@ public class HeroMap : IEntityTypeConfiguration<Hero>
 
         builder.Property(x => x.Name)
             .IsRequired()
-            .HasMaxLength(30);
+            .HasMaxLength(60);
 
-        builder.Property(x => x.Complexity)
-            .IsRequired();
+        builder.Property(x => x.Description)
+            .IsRequired()
+            .HasMaxLength(60);
+
+        builder.Property(x => x.IsPercentage)
+            .IsRequired()
+            .HasDefaultValue(false);
 
         builder.Property(x => x.ImageUrl)
             .IsRequired(false)
             .HasMaxLength(255);
-
-        builder.Property(x => x.AttributeId)
-            .IsRequired();
     }
 }
