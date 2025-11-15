@@ -15,7 +15,7 @@ public class HeroMap : IEntityTypeConfiguration<Hero>
         builder.Property(x => x.Id)
             .UseIdentityColumn();
 
-        builder.Property(x => x.Name)
+        builder.Property(x => x.DisplayName)
             .IsRequired()
             .HasMaxLength(30);
 
