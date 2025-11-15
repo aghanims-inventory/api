@@ -32,5 +32,8 @@ public class HeroMap : IEntityTypeConfiguration<Hero>
 
         builder.Property(x => x.AttributeId)
             .IsRequired();
+
+        builder.HasIndex(x => x.Name)
+            .IsUnique();
     }
 }
