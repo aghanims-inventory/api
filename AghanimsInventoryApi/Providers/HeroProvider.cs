@@ -29,29 +29,39 @@ public class HeroProvider
 
         if (heroes is null)
         {
-            return (List<Hero>)Enumerable.Empty<Hero>();
+            _logger.LogInformation("Heroes not found in cache. Initializing cache.");
+
+            await InitializeCache(cancellationToken);
+
+            return _memoryCache.Get<List<Hero>>(CacheKeys.HeroCache);
         }
 
         return heroes;
     }
 
-    public async Task InitializeCache()
+    public async Task InitializeCache(CancellationToken cancellationToken)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync(cancellationToken);
 
         try
         {
-            _logger.LogInformation("Hero provider has started.");
+            _logger.LogInformation("{ProviderName} has started.", nameof(HeroProvider));
 
             using var serviceScope = _serviceScopeFactory.CreateScope();
 
             AghanimsInventoryDbContext dbContext = serviceScope.ServiceProvider.GetRequiredService<AghanimsInventoryDbContext>();
 
-            List<Hero> heroes = await dbContext.Heroes.ToListAsync();
+            List<Hero> heroes = await dbContext.Heroes
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
 
             _memoryCache.Set(CacheKeys.HeroCache, heroes);
 
-            _logger.LogInformation("Hero provider has completed.");
+            _logger.LogInformation("{ProviderName} has completed. Cached {HeroCount} heroes.", nameof(HeroProvider), heroes.Count);
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while initializing the {ProviderName}.", nameof(HeroProvider));
         }
         finally
         {

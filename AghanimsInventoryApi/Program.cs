@@ -37,9 +37,17 @@ var app = builder.Build();
 
 using (var serviceScope = app.Services.CreateScope())
 {
+    Log.Information("Providers are being initialized.");
+
+    var applicationLifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
+
+    CancellationToken cancellationToken = applicationLifetime.ApplicationStopping;
+
     var heroProvider = serviceScope.ServiceProvider.GetRequiredService<HeroProvider>();
 
-    await heroProvider.InitializeCache();
+    await heroProvider.InitializeCache(cancellationToken);
+
+    Log.Information("Providers have been initialized.");
 }
 
 if (app.Environment.IsDevelopment())
