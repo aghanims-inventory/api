@@ -1,4 +1,5 @@
 using AghanimsInventoryApi.Extensions;
+using AghanimsInventoryApi.Services;
 using Scalar.AspNetCore;
 using Serilog;
 
@@ -26,6 +27,8 @@ builder.Services
     .AddDatabaseSettings(builder.Configuration)
     .AddMemoryCache()
     .AddOpenApi();
+
+builder.Services.AddScoped<HeroV1Service>();
 
 var app = builder.Build();
 

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AghanimsInventoryApi.Models.V1.RequestModels;
+using AghanimsInventoryApi.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AghanimsInventoryApi.Controllers.V1;
 
@@ -8,14 +10,18 @@ namespace AghanimsInventoryApi.Controllers.V1;
 [Tags("Heroes")]
 public class HeroV1Controller : ControllerBase
 {
-    public HeroV1Controller()
-    {
+    private readonly HeroV1Service _heroV1Service;
 
+    public HeroV1Controller(HeroV1Service heroV1Service)
+    {
+        _heroV1Service = heroV1Service;
     }
 
     [HttpGet("")]
-    public async Task<IActionResult> Test()
+    public async Task<IActionResult> QueryHeroes([FromQuery] QueryHeroRequest request, CancellationToken cancellationToken)
     {
-        return Ok();
+        var response = await _heroV1Service.QueryHeroes(request, cancellationToken);
+
+        return StatusCode(response.GetStatusCode(), response);
     }
 }
