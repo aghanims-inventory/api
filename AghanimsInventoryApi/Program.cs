@@ -1,4 +1,5 @@
 using AghanimsInventoryApi.Extensions;
+using AghanimsInventoryApi.Providers;
 using AghanimsInventoryApi.Services;
 using Scalar.AspNetCore;
 using Serilog;
@@ -30,9 +31,17 @@ builder.Services
 
 builder.Services.AddScoped<HeroV1Service>();
 
+builder.Services.AddSingleton<HeroProvider>();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+using (var serviceScope = app.Services.CreateScope())
+{
+    var heroProvider = serviceScope.ServiceProvider.GetRequiredService<HeroProvider>();
+
+    await heroProvider.InitializeCache();
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
