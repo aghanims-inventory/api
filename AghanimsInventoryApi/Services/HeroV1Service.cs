@@ -49,7 +49,8 @@ public class HeroV1Service
             Id = x.Id,
             Name = x.Name,
             DisplayName = x.DisplayName,
-            ImageUrl = x.ImageUrl
+            //IconUrl = x.IconUrl,
+            //ImageUrl = x.ImageUrl
         });
 
         return ApiResponse.Successful(HttpStatusCode.OK, response);

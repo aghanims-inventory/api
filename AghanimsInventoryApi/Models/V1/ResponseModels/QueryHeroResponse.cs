@@ -8,5 +8,7 @@ public class QueryHeroResponse
 
     public string DisplayName { get; set; }
 
-    public string ImageUrl { get; set; }
+    public string? IconUrl { get; set; }
+
+    public string? ImageUrl { get; set; }
 }
