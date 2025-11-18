@@ -10,7 +10,9 @@ public class Hero
 
     public int Complexity { get; set; }
 
-    public string ImageUrl { get; set; }
+    public string? IconUrl { get; set; }
+
+    public string? ImageUrl { get; set; }
 
     public int AttributeId { get; set; }
 

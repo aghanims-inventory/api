@@ -26,6 +26,10 @@ public class HeroMap : IEntityTypeConfiguration<Hero>
         builder.Property(x => x.Complexity)
             .IsRequired();
 
+        builder.Property(x => x.IconUrl)
+            .IsRequired(false)
+            .HasMaxLength(255);
+
         builder.Property(x => x.ImageUrl)
             .IsRequired(false)
             .HasMaxLength(255);
