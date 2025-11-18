@@ -16,7 +16,7 @@ public class HeroStatMap : IEntityTypeConfiguration<HeroStat>
             .UseIdentityColumn();
 
         builder.Property(x => x.Value)
-            .IsRequired();
+            .IsRequired(false);
 
         builder.Property(x => x.StatId)
             .IsRequired();
