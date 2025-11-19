@@ -1,4 +1,6 @@
 ﻿using AghanimsInventoryApi.Models.V1.RequestModels;
+using AghanimsInventoryApi.Models.V1.ResponseModels;
+using AghanimsInventoryApi.Models.V1.ResponseModels.Common;
 using AghanimsInventoryApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,10 +19,29 @@ public class HeroV1Controller : ControllerBase
         _heroV1Service = heroV1Service;
     }
 
+    [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(ApiResponse<GetHeroResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetHero([FromRoute] byte id, CancellationToken cancellationToken)
+    {
+        ApiResponse response = await _heroV1Service.GetHero(id, cancellationToken);
+
+        return StatusCode(response.GetStatusCode(), response);
+    }
+
+    [HttpGet("{name}")]
+    [ProducesResponseType(typeof(ApiResponse<GetHeroResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetHero([FromRoute] string name, CancellationToken cancellationToken)
+    {
+        ApiResponse response = await _heroV1Service.GetHero(name, cancellationToken);
+        
+        return StatusCode(response.GetStatusCode(), response);
+    }
+
     [HttpGet("")]
+    [ProducesResponseType(typeof(ApiResponse<QueryHeroResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> QueryHeroes([FromQuery] QueryHeroRequest request, CancellationToken cancellationToken)
     {
-        var response = await _heroV1Service.QueryHeroes(request, cancellationToken);
+        ApiResponse response = await _heroV1Service.QueryHeroes(request, cancellationToken);
 
         return StatusCode(response.GetStatusCode(), response);
     }

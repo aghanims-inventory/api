@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using AghanimsInventoryApi.Constants;
 using AghanimsInventoryApi.Data.Entities;
+using AghanimsInventoryApi.Data.Enums;
 using AghanimsInventoryApi.Models.V1.RequestModels;
 using AghanimsInventoryApi.Models.V1.ResponseModels;
 using AghanimsInventoryApi.Models.V1.ResponseModels.Common;
@@ -27,6 +28,100 @@ public class HeroV1Service
         //_dbContext = dbContext;
         //_heroProvider = heroProvider;
         _memoryCache = memoryCache;
+    }
+
+    public async Task<ApiResponse> GetHero(byte id, CancellationToken cancellationToken)
+    {
+        _memoryCache.TryGetValue(CacheKeys.HeroCache, out IEnumerable<Hero>? heroes);
+
+        if (heroes is null || !heroes.Any())
+        {
+            _logger.LogError("Heroes could not be found.");
+
+            return ApiResponse.Unsuccessful(HttpStatusCode.NotFound, new ProblemDetails()
+            {
+                Status = StatusCodes.Status404NotFound,
+                Title = ResourceKeys.HeroesCouldNotBeFound,
+                Detail = ResourceKeys.HeroesCouldNotBeFound
+            });
+        }
+
+        Hero? hero = heroes.FirstOrDefault(x => x.Id == id);
+
+        if (hero is null)
+        {
+            _logger.LogError("Hero with id: {HeroId} could not be found.", id);
+
+            return ApiResponse.Unsuccessful(HttpStatusCode.NotFound, new ProblemDetails()
+            {
+                Status = StatusCodes.Status404NotFound,
+                Title = ResourceKeys.HeroCouldNotBeFound,
+                Detail = ResourceKeys.HeroCouldNotBeFound
+            });
+        }
+
+        GetHeroResponse response = new()
+        {
+            Id = hero.Id,
+            Name = hero.Name,
+            DisplayName = hero.DisplayName,
+            Complexity = hero.Complexity,
+            //IconUrl = hero.IconUrl,
+            //ImageUrl = hero.ImageUrl,
+            AttributeId = hero.AttributeId,
+            AttackTypeId = hero.AttackTypeId,
+            FormattedAttribute = ((AttributeTypes)hero.AttributeId).ToString(),
+            FormattedAttackType = ((AttackTypes)hero.AttackTypeId).ToString()
+        };
+
+        return ApiResponse.Successful(HttpStatusCode.OK, response);
+    }
+
+    public async Task<ApiResponse> GetHero(string name, CancellationToken cancellationToken)
+    {
+        _memoryCache.TryGetValue(CacheKeys.HeroCache, out IEnumerable<Hero>? heroes);
+
+        if (heroes is null || !heroes.Any())
+        {
+            _logger.LogError("Heroes could not be found.");
+
+            return ApiResponse.Unsuccessful(HttpStatusCode.NotFound, new ProblemDetails()
+            {
+                Status = StatusCodes.Status404NotFound,
+                Title = ResourceKeys.HeroesCouldNotBeFound,
+                Detail = ResourceKeys.HeroesCouldNotBeFound
+            });
+        }
+
+        var hero = heroes.FirstOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+        if (hero is null)
+        {
+            _logger.LogError("Hero with name: {HeroName} could not be found.", name);
+
+            return ApiResponse.Unsuccessful(HttpStatusCode.NotFound, new ProblemDetails()
+            {
+                Status = StatusCodes.Status404NotFound,
+                Title = ResourceKeys.HeroCouldNotBeFound,
+                Detail = ResourceKeys.HeroCouldNotBeFound
+            });
+        }
+
+        GetHeroResponse response = new()
+        {
+            Id = hero.Id,
+            Name = hero.Name,
+            DisplayName = hero.DisplayName,
+            Complexity = hero.Complexity,
+            //IconUrl = hero.IconUrl,
+            //ImageUrl = hero.ImageUrl,
+            AttributeId = hero.AttributeId,
+            AttackTypeId = hero.AttackTypeId,
+            FormattedAttribute = ((AttributeTypes)hero.AttributeId).ToString(),
+            FormattedAttackType = ((AttackTypes)hero.AttackTypeId).ToString()
+        };
+
+        return ApiResponse.Successful(HttpStatusCode.OK, response);
     }
 
     public async Task<ApiResponse> QueryHeroes(QueryHeroRequest request, CancellationToken cancellationToken)
