@@ -108,7 +108,7 @@ public class HeroTests
 
     [Fact]
     [Trait("Heroes", nameof(_heroService.QueryHeroes))]
-    public async Task QueryHeroes_WithFilter_WhenMatchingHeroInCache_ReturnsData()
+    public async Task QueryHeroes_WithFilterAttributeId_WhenMatchingHeroInCache_ReturnsData()
     {
         using var cts = new CancellationTokenSource();
 
@@ -120,6 +120,71 @@ public class HeroTests
         var result = await _heroService.QueryHeroes(new QueryHeroRequest()
         {
             AttributeId = (int)AttributeTypes.Strength
+        }, cts.Token);
+
+        Assert.True(result.IsSuccessful);
+        Assert.Null(result.Error);
+        Assert.Single((List<QueryHeroResponse>)result.Data!);
+    }
+
+    [Fact]
+    [Trait("Heroes", nameof(_heroService.QueryHeroes))]
+    public async Task QueryHeroes_WithFilterAttackTypeId_WhenMatchingHeroInCache_ReturnsData()
+    {
+        using var cts = new CancellationTokenSource();
+
+        _memoryCache.Set(CacheKeys.HeroCache, new List<Hero>
+        {
+            TestValues.TestHero
+        });
+
+        var result = await _heroService.QueryHeroes(new QueryHeroRequest()
+        {
+            AttackTypeId = (int)AttackTypes.Melee
+        }, cts.Token);
+
+        Assert.True(result.IsSuccessful);
+        Assert.Null(result.Error);
+        Assert.Single((List<QueryHeroResponse>)result.Data!);
+    }
+
+    [Fact]
+    [Trait("Heroes", nameof(_heroService.QueryHeroes))]
+    public async Task QueryHeroes_WithFilterComplexity_WhenMatchingHeroInCache_ReturnsData()
+    {
+        using var cts = new CancellationTokenSource();
+
+        _memoryCache.Set(CacheKeys.HeroCache, new List<Hero>
+        {
+            TestValues.TestHero
+        });
+
+        var result = await _heroService.QueryHeroes(new QueryHeroRequest()
+        {
+            Complexity = 1
+        }, cts.Token);
+
+        Assert.True(result.IsSuccessful);
+        Assert.Null(result.Error);
+        Assert.Single((List<QueryHeroResponse>)result.Data!);
+    }
+
+    [Fact]
+    [Trait("Heroes", nameof(_heroService.QueryHeroes))]
+    public async Task QueryHeroes_WithFilterWithAllProperties_WhenMatchingHeroInCache_ReturnsData()
+    {
+        using var cts = new CancellationTokenSource();
+
+        _memoryCache.Set(CacheKeys.HeroCache, new List<Hero>
+        {
+            TestValues.TestHero
+        });
+
+        var result = await _heroService.QueryHeroes(new QueryHeroRequest()
+        {
+            AttributeId = (int)AttributeTypes.Strength,
+            AttackTypeId = (int)AttackTypes.Melee,
+            Complexity = 1
         }, cts.Token);
 
         Assert.True(result.IsSuccessful);
