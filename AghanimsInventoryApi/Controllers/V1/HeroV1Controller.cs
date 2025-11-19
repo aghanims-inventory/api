@@ -21,6 +21,7 @@ public class HeroV1Controller : ControllerBase
 
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(ApiResponse<GetHeroResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetHero([FromRoute] byte id, CancellationToken cancellationToken)
     {
         ApiResponse response = await _heroV1Service.GetHero(id, cancellationToken);
@@ -30,6 +31,7 @@ public class HeroV1Controller : ControllerBase
 
     [HttpGet("{name}")]
     [ProducesResponseType(typeof(ApiResponse<GetHeroResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetHero([FromRoute] string name, CancellationToken cancellationToken)
     {
         ApiResponse response = await _heroV1Service.GetHero(name, cancellationToken);
@@ -39,6 +41,7 @@ public class HeroV1Controller : ControllerBase
 
     [HttpGet("")]
     [ProducesResponseType(typeof(ApiResponse<QueryHeroResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> QueryHeroes([FromQuery] QueryHeroRequest request, CancellationToken cancellationToken)
     {
         ApiResponse response = await _heroV1Service.QueryHeroes(request, cancellationToken);
