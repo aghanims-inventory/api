@@ -22,5 +22,8 @@ public class RarityMap : IEntityTypeConfiguration<Rarity>
         builder.Property(x => x.Color)
             .IsRequired()
             .HasMaxLength(6);
+
+        builder.Property(x => x.Order)
+            .IsRequired();
     }
 }

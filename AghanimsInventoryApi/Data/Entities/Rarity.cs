@@ -7,4 +7,6 @@ public class Rarity
     public required string Name { get; set; }
 
     public required string Color { get; set; }
+
+    public byte Order { get; set; }
 }
