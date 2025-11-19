@@ -23,6 +23,7 @@ public class AghanimsInventoryDbContext : DbContext
         modelBuilder.ApplyConfiguration(new RoleMap());
         modelBuilder.ApplyConfiguration(new StatMap());
         modelBuilder.ApplyConfiguration(new StatTypeMap());
+        modelBuilder.ApplyConfiguration(new RarityMap());
 
         base.OnModelCreating(modelBuilder);
     }
@@ -44,4 +45,6 @@ public class AghanimsInventoryDbContext : DbContext
     public DbSet<Stat> Stats { get; set; }
 
     public DbSet<StatType> StatTypes { get; set; }
+
+    public DbSet<Rarity> Rarities{ get; set; }
 }
