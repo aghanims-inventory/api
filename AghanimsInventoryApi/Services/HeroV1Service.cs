@@ -62,14 +62,14 @@ public class HeroV1Service
             heroes = heroes.Where(x => x.Complexity == request.Complexity.Value);
         }
 
-        var response = heroes.Select(x => new QueryHeroResponse()
+        List<QueryHeroResponse> response = heroes.Select(x => new QueryHeroResponse()
         {
             Id = x.Id,
             Name = x.Name,
             DisplayName = x.DisplayName,
             //IconUrl = x.IconUrl,
             //ImageUrl = x.ImageUrl
-        });
+        }).ToList();
 
         return ApiResponse.Successful(HttpStatusCode.OK, response);
     }
