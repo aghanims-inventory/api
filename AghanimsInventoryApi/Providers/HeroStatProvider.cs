@@ -6,15 +6,15 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace AghanimsInventoryApi.Providers;
 
-public class HeroProvider
+public class HeroStatProvider
 {
-    private readonly ILogger<HeroProvider> _logger;
+    private readonly ILogger<HeroStatProvider> _logger;
     private readonly IMemoryCache _memoryCache;
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly SemaphoreSlim _semaphore = new(1, 1);
 
-    public HeroProvider(
-        ILogger<HeroProvider> logger,
+    public HeroStatProvider(
+        ILogger<HeroStatProvider> logger,
         IMemoryCache memoryCache,
         IServiceScopeFactory serviceScopeFactory)
     {
@@ -23,20 +23,20 @@ public class HeroProvider
         _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public async Task<List<Hero>> GetHeroes(CancellationToken cancellationToken)
+    public async Task<List<HeroStat>> GetHeroStats(CancellationToken cancellationToken)
     {
-        _memoryCache.TryGetValue(CacheKeys.HeroCache, out List<Hero>? heroes);
+        _memoryCache.TryGetValue(CacheKeys.HeroStatCache, out List<HeroStat>? heroStats);
 
-        if (heroes is null)
+        if (heroStats is null)
         {
-            _logger.LogInformation("Heroes not found in cache. Initializing cache.");
+            _logger.LogInformation("Hero stats not found in cache. Initializing cache.");
 
             await InitializeCache(cancellationToken);
 
-            return _memoryCache.Get<List<Hero>>(CacheKeys.HeroCache) ?? new List<Hero>();
+            return _memoryCache.Get<List<HeroStat>>(CacheKeys.HeroStatCache) ?? new List<HeroStat>();
         }
 
-        return heroes;
+        return heroStats;
     }
 
     public async Task InitializeCache(CancellationToken cancellationToken)
@@ -45,23 +45,23 @@ public class HeroProvider
 
         try
         {
-            _logger.LogInformation("{ProviderName} has started.", nameof(HeroProvider));
+            _logger.LogInformation("{ProviderName} has started.", nameof(HeroStatProvider));
 
             using var serviceScope = _serviceScopeFactory.CreateScope();
 
             AghanimsInventoryDbContext dbContext = serviceScope.ServiceProvider.GetRequiredService<AghanimsInventoryDbContext>();
 
-            List<Hero> heroes = await dbContext.Heroes
+            List<HeroStat> heroStats = await dbContext.HeroStats
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
-            _memoryCache.Set(CacheKeys.HeroCache, heroes);
+            _memoryCache.Set(CacheKeys.HeroStatCache, heroStats);
 
-            _logger.LogInformation("{ProviderName} has completed. Cached {HeroCount} heroes.", nameof(HeroProvider), heroes.Count);
+            _logger.LogInformation("{ProviderName} has completed. Cached {HeroStatCount} hero stats.", nameof(HeroStatProvider), heroStats.Count);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while initializing the {ProviderName}.", nameof(HeroProvider));
+            _logger.LogError(ex, "An error occurred while initializing the {ProviderName}.", nameof(HeroStatProvider));
         }
         finally
         {

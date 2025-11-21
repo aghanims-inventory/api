@@ -293,30 +293,22 @@ public class HeroTests
             Complexity = 1
         };
 
+        public static readonly Hero TestHero2 = new Hero()
+        {
+            Id = 2,
+            Name = "bane",
+            DisplayName = "Bane",
+            IconUrl = string.Empty,
+            ImageUrl = string.Empty,
+            AttributeId = (int)AttributeTypes.Universal,
+            AttackTypeId = (int)AttackTypes.Ranged,
+            Complexity = 2
+        };
+
         public static readonly List<Hero> TestHeroes = new List<Hero>()
         {
-            new()
-            {
-                Id = 1,
-                Name = "alchemist",
-                DisplayName = "Alchemist",
-                IconUrl = string.Empty,
-                ImageUrl = string.Empty,
-                AttributeId = (int)AttributeTypes.Strength,
-                AttackTypeId = (int)AttackTypes.Melee,
-                Complexity = 1
-            },
-            new()
-            {
-                Id = 2,
-                Name = "bane",
-                DisplayName = "Bane",
-                IconUrl = string.Empty,
-                ImageUrl = string.Empty,
-                AttributeId = (int)AttributeTypes.Universal,
-                AttackTypeId = (int)AttackTypes.Ranged,
-                Complexity = 2
-            }
+            TestHero,
+            TestHero2
         };
     }
 }
