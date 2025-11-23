@@ -1,3 +1,4 @@
+using AghanimsInventoryApi.Constants;
 using AghanimsInventoryApi.Extensions;
 using AghanimsInventoryApi.Providers;
 using AghanimsInventoryApi.Services;
@@ -26,6 +27,7 @@ builder.Services
     .AddApiVersioningSettings()
     .AddEndpointsApiExplorer()
     .AddDatabaseSettings(builder.Configuration)
+    .AddCorsSettings()
     .AddMemoryCache()
     .AddOpenApi();
 
@@ -36,6 +38,8 @@ builder.Services.AddSingleton<HeroAttributeProvider>();
 builder.Services.AddSingleton<HeroStatProvider>();
 
 var app = builder.Build();
+
+app.UseCors(AppConstants.DefaultCorsPolicy);
 
 using (var serviceScope = app.Services.CreateScope())
 {
