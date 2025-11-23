@@ -1,4 +1,5 @@
 ﻿using AghanimsInventoryApi.Constants;
+using FluentValidation;
 
 namespace AghanimsInventoryApi.Extensions;
 
@@ -20,6 +21,13 @@ public static class ServiceCollectionExtensions
                         .AllowAnyMethod();
                 });
         });
+
+        return services;
+    }
+
+    public static IServiceCollection AddValidators(this IServiceCollection services)
+    {
+        services.AddValidatorsFromAssemblyContaining<Program>();
 
         return services;
     }

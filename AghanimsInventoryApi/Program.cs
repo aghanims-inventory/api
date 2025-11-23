@@ -28,6 +28,7 @@ builder.Services
     .AddEndpointsApiExplorer()
     .AddDatabaseSettings(builder.Configuration)
     .AddCorsSettings()
+    .AddValidators()
     .AddMemoryCache()
     .AddOpenApi();
 
