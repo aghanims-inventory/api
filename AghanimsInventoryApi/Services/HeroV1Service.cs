@@ -164,6 +164,10 @@ public class HeroV1Service
             DisplayName = x.DisplayName,
             //IconUrl = x.IconUrl,
             //ImageUrl = x.ImageUrl
+            AttributeId = x.AttributeId,
+            AttackTypeId = x.AttackTypeId,
+            FormattedAttribute = ((AttributeTypes)x.AttributeId).ToString(),
+            FormattedAttackType = ((AttackTypes)x.AttackTypeId).ToString()
         }).ToList();
 
         return ApiResponse.Successful(HttpStatusCode.OK, response);

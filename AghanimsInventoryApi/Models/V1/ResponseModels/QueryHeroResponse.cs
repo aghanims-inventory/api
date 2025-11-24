@@ -11,4 +11,12 @@ public class QueryHeroResponse
     public string? IconUrl { get; set; }
 
     public string? ImageUrl { get; set; }
+
+    public int AttributeId { get; set; }
+
+    public int AttackTypeId { get; set; }
+
+    public required string FormattedAttribute { get; set; }
+
+    public required string FormattedAttackType { get; set; }
 }
