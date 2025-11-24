@@ -30,6 +30,36 @@ public class HeroV1Service
         _memoryCache = memoryCache;
     }
 
+    public async Task<ApiResponse> PageFilters(CancellationToken cancellationToken)
+    {
+        GetHeroPageFilterResponse response = new()
+        {
+            AttributeTypes = Enum.GetValues<AttributeTypes>()
+                .Select(x => new GetHeroPageFilterAttributeResponse()
+                {
+                    Id = (byte)x,
+                    Name = x.ToString()
+                })
+                .ToList(),
+            AttackTypes = Enum.GetValues<AttackTypes>()
+                .Select(x => new GetHeroPageFilterAttackTypeResponse()
+                {
+                    Id = (byte)x,
+                    Name = x.ToString()
+                })
+                .ToList(),
+            StatTypes = Enum.GetValues<StatTypes>()
+                .Select(x => new GetHeroPageFilterStatTypeResponse()
+                {
+                    Id = (byte)x,
+                    Name = x.ToString()
+                })
+                .ToList()
+        };
+
+        return ApiResponse.Successful(HttpStatusCode.OK, response);
+    }
+
     public async Task<ApiResponse> GetHero(byte id, CancellationToken cancellationToken)
     {
         _memoryCache.TryGetValue(CacheKeys.HeroCache, out IEnumerable<Hero>? heroes);

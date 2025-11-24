@@ -19,6 +19,15 @@ public class HeroV1Controller : ControllerBase
         _heroV1Service = heroV1Service;
     }
 
+    [HttpGet("filters")]
+    [ProducesResponseType(typeof(ApiResponse<GetHeroPageFilterResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> PageFilters(CancellationToken cancellationToken)
+    {
+        ApiResponse response = await _heroV1Service.PageFilters(cancellationToken);
+
+        return StatusCode(response.GetStatusCode(), response);
+    }
+
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(ApiResponse<GetHeroResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
