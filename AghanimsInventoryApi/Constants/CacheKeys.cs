@@ -9,4 +9,6 @@ public class CacheKeys
     public const string HeroStatCache = nameof(HeroStatCache);
 
     public const string AttributeCache = nameof(AttributeCache);
+
+    public const string AttackTypeCache = nameof(AttackTypeCache);
 }
