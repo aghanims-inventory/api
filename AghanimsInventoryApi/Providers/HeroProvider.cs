@@ -23,22 +23,6 @@ public class HeroProvider
         _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public async Task<List<Hero>> GetHeroes(CancellationToken cancellationToken)
-    {
-        _memoryCache.TryGetValue(CacheKeys.HeroCache, out List<Hero>? heroes);
-
-        if (heroes is null)
-        {
-            _logger.LogInformation("Heroes not found in cache. Initializing cache.");
-
-            await InitializeCache(cancellationToken);
-
-            return _memoryCache.Get<List<Hero>>(CacheKeys.HeroCache) ?? new List<Hero>();
-        }
-
-        return heroes;
-    }
-
     public async Task InitializeCache(CancellationToken cancellationToken)
     {
         await _semaphore.WaitAsync(cancellationToken);

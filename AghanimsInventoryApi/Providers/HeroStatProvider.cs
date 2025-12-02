@@ -23,22 +23,6 @@ public class HeroStatProvider
         _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public async Task<List<HeroStat>> GetHeroStats(CancellationToken cancellationToken)
-    {
-        _memoryCache.TryGetValue(CacheKeys.HeroStatCache, out List<HeroStat>? heroStats);
-
-        if (heroStats is null)
-        {
-            _logger.LogInformation("Hero stats not found in cache. Initializing cache.");
-
-            await InitializeCache(cancellationToken);
-
-            return _memoryCache.Get<List<HeroStat>>(CacheKeys.HeroStatCache) ?? new List<HeroStat>();
-        }
-
-        return heroStats;
-    }
-
     public async Task InitializeCache(CancellationToken cancellationToken)
     {
         await _semaphore.WaitAsync(cancellationToken);
