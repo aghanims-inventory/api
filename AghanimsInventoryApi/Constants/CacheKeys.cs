@@ -11,4 +11,6 @@ public class CacheKeys
     public const string AttributeCache = nameof(AttributeCache);
 
     public const string AttackTypeCache = nameof(AttackTypeCache);
+
+    public const string StatTypeCache = nameof(StatTypeCache);
 }
