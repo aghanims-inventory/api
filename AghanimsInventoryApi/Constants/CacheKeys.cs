@@ -15,4 +15,6 @@ public class CacheKeys
     public const string StatTypeCache = nameof(StatTypeCache);
 
     public const string RoleCache = nameof(RoleCache);
+
+    public const string RarityCache = nameof(RarityCache);
 }
