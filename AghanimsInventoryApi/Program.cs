@@ -47,59 +47,7 @@ var app = builder.Build();
 
 app.UseCors(AppConstants.DefaultCorsPolicy);
 
-using (var serviceScope = app.Services.CreateScope())
-{
-    Log.Information("Providers are being initialized.");
-
-    var applicationLifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
-
-    CancellationToken cancellationToken = applicationLifetime.ApplicationStopping;
-
-    var heroProvider = serviceScope.ServiceProvider.GetRequiredService<HeroProvider>();
-
-    var heroProviderTask = heroProvider.InitializeCache(cancellationToken);
-
-    var heroAttributeProvider = serviceScope.ServiceProvider.GetRequiredService<HeroAttributeProvider>();
-
-    var heroAttributeProviderTask = heroAttributeProvider.InitializeCache(cancellationToken);
-
-    var heroStatProvider = serviceScope.ServiceProvider.GetRequiredService<HeroStatProvider>();
-
-    var heroStatProviderTask = heroStatProvider.InitializeCache(cancellationToken);
-
-    var attributeProvider = serviceScope.ServiceProvider.GetRequiredService<AttributeProvider>();
-
-    var attributeProviderTask = attributeProvider.InitializeCache(cancellationToken);
-
-    var attackTypeProvider = serviceScope.ServiceProvider.GetRequiredService<AttackTypeProvider>();
-
-    var attackTypeProviderTask = attackTypeProvider.InitializeCache(cancellationToken);
-
-    var statTypeProvider = serviceScope.ServiceProvider.GetRequiredService<StatTypeProvider>();
-
-    var statTypeProviderTask = statTypeProvider.InitializeCache(cancellationToken);
-
-    var roleProvider = serviceScope.ServiceProvider.GetRequiredService<RoleProvider>();
-
-    var roleProviderTask = roleProvider.InitializeCache(cancellationToken);
-
-    var rarityProvider = serviceScope.ServiceProvider.GetRequiredService<RarityProvider>();
-
-    var rarityProviderTask = rarityProvider.InitializeCache(cancellationToken);
-
-    await Task.WhenAll(
-        heroProviderTask,
-        heroAttributeProviderTask,
-        heroStatProviderTask,
-        attributeProviderTask,
-        attackTypeProviderTask,
-        statTypeProviderTask,
-        roleProviderTask,
-        rarityProviderTask
-    );
-
-    Log.Information("Providers have been initialized.");
-}
+await app.InitializeProviders();
 
 if (app.Environment.IsDevelopment())
 {
