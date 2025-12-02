@@ -40,6 +40,7 @@ builder.Services.AddSingleton<HeroStatProvider>();
 builder.Services.AddSingleton<AttributeProvider>();
 builder.Services.AddSingleton<AttackTypeProvider>();
 builder.Services.AddSingleton<StatTypeProvider>();
+builder.Services.AddSingleton<RoleProvider>();
 
 var app = builder.Build();
 
@@ -77,13 +78,18 @@ using (var serviceScope = app.Services.CreateScope())
 
     var statTypeProviderTask = statTypeProvider.InitializeCache(cancellationToken);
 
+    var roleProvider = serviceScope.ServiceProvider.GetRequiredService<RoleProvider>();
+
+    var roleProviderTask = roleProvider.InitializeCache(cancellationToken);
+
     await Task.WhenAll(
         heroProviderTask,
         heroAttributeProviderTask,
         heroStatProviderTask,
         attributeProviderTask,
         attackTypeProviderTask,
-        statTypeProviderTask
+        statTypeProviderTask,
+        roleProviderTask
     );
 
     Log.Information("Providers have been initialized.");
