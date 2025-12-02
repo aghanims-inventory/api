@@ -37,6 +37,7 @@ builder.Services.AddScoped<HeroV1Service>();
 builder.Services.AddSingleton<HeroProvider>();
 builder.Services.AddSingleton<HeroAttributeProvider>();
 builder.Services.AddSingleton<HeroStatProvider>();
+builder.Services.AddSingleton<AttributeProvider>();
 
 var app = builder.Build();
 
@@ -62,10 +63,15 @@ using (var serviceScope = app.Services.CreateScope())
 
     var heroStatProviderTask = heroStatProvider.InitializeCache(cancellationToken);
 
+    var attributeProvider = serviceScope.ServiceProvider.GetRequiredService<AttributeProvider>();
+
+    var attributeProviderTask = attributeProvider.InitializeCache(cancellationToken);
+
     await Task.WhenAll(
         heroProviderTask,
         heroAttributeProviderTask,
-        heroStatProviderTask);
+        heroStatProviderTask,
+        attributeProviderTask);
 
     Log.Information("Providers have been initialized.");
 }
