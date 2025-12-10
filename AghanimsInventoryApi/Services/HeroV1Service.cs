@@ -30,7 +30,7 @@ public class HeroV1Service
         _memoryCache = memoryCache;
     }
 
-    public async Task<ApiResponse> PageFilters(CancellationToken cancellationToken)
+    public async Task<ApiResponse> GetPageFilters(CancellationToken cancellationToken)
     {
         GetHeroPageFilterResponse response = new()
         {

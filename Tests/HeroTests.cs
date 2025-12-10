@@ -279,9 +279,27 @@ public class HeroTests
         Assert.NotNull((GetHeroResponse)result.Data!);
     }
 
+    [Fact]
+    [Trait("Heroes", $"{nameof(_heroService.GetPageFilters)}")]
+    public async Task GetPageFilters_ReturnsFilters()
+    {
+        using var cts = new CancellationTokenSource();
+
+        var result = await _heroService.GetPageFilters(cts.Token);
+
+        GetHeroPageFilterResponse response = (GetHeroPageFilterResponse)result.Data!;
+
+        Assert.True(result.IsSuccessful);
+        Assert.NotNull(response);
+
+        Assert.Equal(response.AttributeTypes.Count, Enum.GetValues<AttributeTypes>().Length);
+        Assert.Equal(response.AttackTypes.Count, Enum.GetValues<AttackTypes>().Length);
+        Assert.Equal(response.StatTypes.Count, Enum.GetValues<StatTypes>().Length);
+    }
+
     private static class TestValues
     {
-        public static readonly Hero TestHero = new Hero()
+        public static readonly Hero TestHero = new()
         {
             Id = 1,
             Name = "alchemist",
@@ -293,7 +311,7 @@ public class HeroTests
             Complexity = 1
         };
 
-        public static readonly Hero TestHero2 = new Hero()
+        public static readonly Hero TestHero2 = new()
         {
             Id = 2,
             Name = "bane",

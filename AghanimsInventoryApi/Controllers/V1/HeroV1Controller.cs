@@ -23,7 +23,7 @@ public class HeroV1Controller : ControllerBase
     [ProducesResponseType(typeof(ApiResponse<GetHeroPageFilterResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> PageFilters(CancellationToken cancellationToken)
     {
-        ApiResponse response = await _heroV1Service.PageFilters(cancellationToken);
+        ApiResponse response = await _heroV1Service.GetPageFilters(cancellationToken);
 
         return StatusCode(response.GetStatusCode(), response);
     }
