@@ -74,8 +74,6 @@ public class HeroV1Service
 
         if (hero is null)
         {
-            _logger.LogError("Hero with id: {HeroId} could not be found.", id);
-
             return ApiResponse.Unsuccessful(HttpStatusCode.NotFound, new ProblemDetails()
             {
                 Status = StatusCodes.Status404NotFound,
@@ -121,8 +119,6 @@ public class HeroV1Service
 
         if (hero is null)
         {
-            _logger.LogError("Hero with name: {HeroName} could not be found.", name);
-
             return ApiResponse.Unsuccessful(HttpStatusCode.NotFound, new ProblemDetails()
             {
                 Status = StatusCodes.Status404NotFound,
