@@ -14,19 +14,13 @@ namespace AghanimsInventoryApi.Services;
 public class HeroV1Service
 {
     private readonly ILogger<HeroV1Service> _logger;
-    //private readonly AghanimsInventoryDbContext _dbContext;
-    //private readonly HeroProvider _heroProvider;
     private readonly IMemoryCache _memoryCache;
 
     public HeroV1Service(
         ILogger<HeroV1Service> logger,
-        //AghanimsInventoryDbContext dbContext,
-        //HeroProvider heroProvider,
         IMemoryCache memoryCache)
     {
         _logger = logger;
-        //_dbContext = dbContext;
-        //_heroProvider = heroProvider;
         _memoryCache = memoryCache;
     }
 
@@ -156,8 +150,6 @@ public class HeroV1Service
 
     public async Task<ApiResponse> QueryHeroes(QueryHeroRequest request, CancellationToken cancellationToken)
     {
-        //IEnumerable<Hero> query = await _heroProvider.GetHeroes(cancellationToken);
-
         _memoryCache.TryGetValue(CacheKeys.HeroCache, out IEnumerable<Hero>? heroes);
 
         if (heroes is null || !heroes.Any())
