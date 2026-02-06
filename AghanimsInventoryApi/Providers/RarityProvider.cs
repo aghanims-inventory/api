@@ -13,6 +13,8 @@ public class RarityProvider
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly SemaphoreSlim _semaphore = new(1, 1);
 
+    private static readonly TimeSpan SemaphoreWaitTimeout = TimeSpan.FromSeconds(3);
+
     public RarityProvider(
         ILogger<RarityProvider> logger,
         IMemoryCache memoryCache,
@@ -25,11 +27,20 @@ public class RarityProvider
 
     public async Task InitializeCache(CancellationToken cancellationToken)
     {
-        await _semaphore.WaitAsync(cancellationToken);
+        bool isAcquired = false;
 
         try
         {
             _logger.LogInformation("{ProviderName} has started.", nameof(RarityProvider));
+
+            isAcquired = await _semaphore.WaitAsync(SemaphoreWaitTimeout, cancellationToken);
+
+            if (!isAcquired)
+            {
+                _logger.LogWarning("{ProviderName} is already processing a request.", nameof(RarityProvider));
+
+                return;
+            }
 
             using var serviceScope = _serviceScopeFactory.CreateScope();
 
@@ -49,7 +60,10 @@ public class RarityProvider
         }
         finally
         {
-            _semaphore.Release();
+            if (isAcquired)
+            {
+                _semaphore.Release();
+            }
         }
     }
 }
