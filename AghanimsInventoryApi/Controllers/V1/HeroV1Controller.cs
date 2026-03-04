@@ -31,7 +31,7 @@ public class HeroV1Controller : ControllerBase
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(ApiResponse<GetHeroResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetHero([FromRoute] byte id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetHero([FromRoute] int id, CancellationToken cancellationToken)
     {
         ApiResponse response = await _heroV1Service.GetHero(id, cancellationToken);
 

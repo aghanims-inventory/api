@@ -5,7 +5,9 @@ using AghanimsInventoryApi.Data.Entities;
 using AghanimsInventoryApi.Data.Enums;
 using AghanimsInventoryApi.Models.V1.RequestModels;
 using AghanimsInventoryApi.Models.V1.ResponseModels;
+using AghanimsInventoryApi.Models.V1.ResponseModels.Common;
 using AghanimsInventoryApi.Services;
+using ApiTests.Settings;
 using MemoryCache.Testing.Moq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -38,7 +40,7 @@ public class HeroTests
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
 
-        AghanimsInventoryDbContext context = new(options);
+        TestDbContext context = new(options);
 
         context.Database.EnsureCreated();
 
@@ -50,251 +52,258 @@ public class HeroTests
         return new HeroV1Service(_logger.Object, _memoryCache);
     }
 
-    [Fact]
-    [Trait("Heroes", nameof(_heroService.QueryHeroes))]
-    public async Task QueryHeroes_WhenCacheIsEmpty_ReturnsNotFound()
+    public class ValidationTests : HeroTests
     {
-        using var cts = new CancellationTokenSource();
 
-        var result = await _heroService.QueryHeroes(new QueryHeroRequest(), cts.Token);
-
-        Assert.False(result.IsSuccessful);
-        Assert.Null(result.Data);
-        Assert.NotNull(result.Error);
-
-        Assert.False(result.IsSuccessful);
-        Assert.NotNull(result.Error);
-        Assert.True(result.GetStatusCode() == (int)HttpStatusCode.NotFound);
-        Assert.Equal(ResourceKeys.HeroesCouldNotBeFound, result.Error.Title);
     }
 
-    [Fact]
-    [Trait("Heroes", nameof(_heroService.QueryHeroes))]
-    public async Task QueryHeroes_WhenCacheHasOneHero_ReturnsSuccess()
+    public class ServiceTests : HeroTests
     {
-        using var cts = new CancellationTokenSource();
-
-        _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
-
-        var result = await _heroService.QueryHeroes(new QueryHeroRequest(), cts.Token);
-
-        Assert.True(result.IsSuccessful);
-        Assert.Null(result.Error);
-    }
-
-    [Fact]
-    [Trait("Heroes", nameof(_heroService.QueryHeroes))]
-    public async Task QueryHeroes_WithFilter_WhenNoMatchingHeroInCache_ReturnsEmpty()
-    {
-        using var cts = new CancellationTokenSource();
-
-        _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
-
-        var result = await _heroService.QueryHeroes(new QueryHeroRequest()
+        [Fact]
+        [Trait($"{nameof(HeroV1Service)}", $"{nameof(ServiceTests)}/{nameof(HeroV1Service.QueryHeroes)}")]
+        public async Task QueryHeroes_WhenCacheIsEmpty_ReturnsNotFound()
         {
-            AttributeId = (int)AttributeTypes.Intelligence
-        }, cts.Token);
+            using var cts = new CancellationTokenSource();
 
-        Assert.True(result.IsSuccessful);
-        Assert.Null(result.Error);
-        Assert.Empty((List<QueryHeroResponse>)result.Data!);
-    }
+            ApiResponse result = await _heroService.QueryHeroes(new QueryHeroRequest(), cts.Token);
 
-    [Fact]
-    [Trait("Heroes", nameof(_heroService.QueryHeroes))]
-    public async Task QueryHeroes_WithFilterAttributeId_WhenMatchingHeroInCache_ReturnsData()
-    {
-        using var cts = new CancellationTokenSource();
+            Assert.False(result.IsSuccessful);
+            Assert.Null(result.Data);
+            Assert.NotNull(result.Error);
 
-        _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
+            Assert.NotNull(result.Error);
+            Assert.True(result.GetStatusCode() == (int)HttpStatusCode.NotFound);
+            Assert.Equal(ResourceKeys.HeroesCouldNotBeFound, result.Error.Title);
+        }
 
-        var result = await _heroService.QueryHeroes(new QueryHeroRequest()
+        [Fact]
+        [Trait($"{nameof(HeroV1Service)}", $"{nameof(ServiceTests)}/{nameof(HeroV1Service.QueryHeroes)}")]
+        public async Task QueryHeroes_WhenCacheHasOneHero_ReturnsSuccess()
         {
-            AttributeId = (int)AttributeTypes.Strength
-        }, cts.Token);
+            using var cts = new CancellationTokenSource();
 
-        Assert.True(result.IsSuccessful);
-        Assert.Null(result.Error);
-        Assert.Single((List<QueryHeroResponse>)result.Data!);
-    }
+            _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
 
-    [Fact]
-    [Trait("Heroes", nameof(_heroService.QueryHeroes))]
-    public async Task QueryHeroes_WithFilterAttackTypeId_WhenMatchingHeroInCache_ReturnsData()
-    {
-        using var cts = new CancellationTokenSource();
+            ApiResponse result = await _heroService.QueryHeroes(new QueryHeroRequest(), cts.Token);
 
-        _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
+            Assert.True(result.IsSuccessful);
+            Assert.Null(result.Error);
+        }
 
-        var result = await _heroService.QueryHeroes(new QueryHeroRequest()
+        [Fact]
+        [Trait($"{nameof(HeroV1Service)}", $"{nameof(ServiceTests)}/{nameof(HeroV1Service.QueryHeroes)}")]
+        public async Task QueryHeroes_WithFilter_WhenNoMatchingHeroInCache_ReturnsEmpty()
         {
-            AttackTypeId = (int)AttackTypes.Melee
-        }, cts.Token);
+            using var cts = new CancellationTokenSource();
 
-        Assert.True(result.IsSuccessful);
-        Assert.Null(result.Error);
-        Assert.Single((List<QueryHeroResponse>)result.Data!);
-    }
+            _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
 
-    [Fact]
-    [Trait("Heroes", nameof(_heroService.QueryHeroes))]
-    public async Task QueryHeroes_WithFilterComplexity_WhenMatchingHeroInCache_ReturnsData()
-    {
-        using var cts = new CancellationTokenSource();
+            ApiResponse result = await _heroService.QueryHeroes(new QueryHeroRequest()
+            {
+                AttributeId = (int)AttributeTypes.Intelligence
+            }, cts.Token);
 
-        _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
+            Assert.True(result.IsSuccessful);
+            Assert.Null(result.Error);
+            Assert.Empty((List<QueryHeroResponse>)result.Data!);
+        }
 
-        var result = await _heroService.QueryHeroes(new QueryHeroRequest()
+        [Fact]
+        [Trait($"{nameof(HeroV1Service)}", $"{nameof(ServiceTests)}/{nameof(HeroV1Service.QueryHeroes)}")]
+        public async Task QueryHeroes_WithFilterAttributeId_WhenMatchingHeroInCache_ReturnsData()
         {
-            Complexity = 1
-        }, cts.Token);
+            using var cts = new CancellationTokenSource();
 
-        Assert.True(result.IsSuccessful);
-        Assert.Null(result.Error);
-        Assert.Single((List<QueryHeroResponse>)result.Data!);
-    }
+            _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
 
-    [Fact]
-    [Trait("Heroes", nameof(_heroService.QueryHeroes))]
-    public async Task QueryHeroes_WithFilterWithAllProperties_WhenMatchingHeroInCache_ReturnsData()
-    {
-        using var cts = new CancellationTokenSource();
+            ApiResponse result = await _heroService.QueryHeroes(new QueryHeroRequest()
+            {
+                AttributeId = (int)AttributeTypes.Strength
+            }, cts.Token);
 
-        _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
+            Assert.True(result.IsSuccessful);
+            Assert.Null(result.Error);
+            Assert.Single((List<QueryHeroResponse>)result.Data!);
+        }
 
-        var result = await _heroService.QueryHeroes(new QueryHeroRequest()
+        [Fact]
+        [Trait($"{nameof(HeroV1Service)}", $"{nameof(ServiceTests)}/{nameof(HeroV1Service.QueryHeroes)}")]
+        public async Task QueryHeroes_WithFilterAttackTypeId_WhenMatchingHeroInCache_ReturnsData()
         {
-            AttributeId = (int)AttributeTypes.Strength,
-            AttackTypeId = (int)AttackTypes.Melee,
-            Complexity = 1
-        }, cts.Token);
+            using var cts = new CancellationTokenSource();
 
-        Assert.True(result.IsSuccessful);
-        Assert.Null(result.Error);
-        Assert.Single((List<QueryHeroResponse>)result.Data!);
-    }
+            _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
 
-    [Fact]
-    [Trait("Heroes", $"{nameof(_heroService.GetHero)}/id")]
-    public async Task GetHeroes_WithId_WhenCacheHasNoData_ReturnsHeroesNotFound()
-    {
-        using var cts = new CancellationTokenSource();
+            ApiResponse result = await _heroService.QueryHeroes(new QueryHeroRequest()
+            {
+                AttackTypeId = (int)AttackTypes.Melee
+            }, cts.Token);
 
-        var result = await _heroService.GetHero(255, cts.Token);
+            Assert.True(result.IsSuccessful);
+            Assert.Null(result.Error);
+            Assert.Single((List<QueryHeroResponse>)result.Data!);
+        }
 
-        Assert.False(result.IsSuccessful);
-        Assert.NotNull(result.Error);
-        Assert.True(result.GetStatusCode() == (int)HttpStatusCode.NotFound);
-        Assert.Equal(ResourceKeys.HeroesCouldNotBeFound, result.Error.Title);
-    }
+        [Fact]
+        [Trait($"{nameof(HeroV1Service)}", $"{nameof(ServiceTests)}/{nameof(HeroV1Service.QueryHeroes)}")]
+        public async Task QueryHeroes_WithFilterComplexity_WhenMatchingHeroInCache_ReturnsData()
+        {
+            using var cts = new CancellationTokenSource();
 
-    [Fact]
-    [Trait("Heroes", $"{nameof(_heroService.GetHero)}/id")]
-    public async Task GetHeroes_WithId_WhenMatchingHeroInCache_ReturnsData()
-    {
-        using var cts = new CancellationTokenSource();
+            _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
 
-        _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
+            ApiResponse result = await _heroService.QueryHeroes(new QueryHeroRequest()
+            {
+                Complexity = 1
+            }, cts.Token);
 
-        var result = await _heroService.GetHero((byte)TestValues.TestHero.Id, cts.Token);
+            Assert.True(result.IsSuccessful);
+            Assert.Null(result.Error);
+            Assert.Single((List<QueryHeroResponse>)result.Data!);
+        }
 
-        Assert.True(result.IsSuccessful);
-        Assert.Null(result.Error);
-        Assert.NotNull((GetHeroResponse)result.Data!);
-    }
+        [Fact]
+        [Trait($"{nameof(HeroV1Service)}", $"{nameof(ServiceTests)}/{nameof(HeroV1Service.QueryHeroes)}")]
+        public async Task QueryHeroes_WithFilterWithAllProperties_WhenMatchingHeroInCache_ReturnsData()
+        {
+            using var cts = new CancellationTokenSource();
 
-    [Fact]
-    [Trait("Heroes", $"{nameof(_heroService.GetHero)}/id")]
-    public async Task GetHeroes_WithId_WhenNoMatchingHeroInCache_ReturnsHeroNotFOund()
-    {
-        using var cts = new CancellationTokenSource();
+            _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
 
-        _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
+            ApiResponse result = await _heroService.QueryHeroes(new QueryHeroRequest()
+            {
+                AttributeId = (int)AttributeTypes.Strength,
+                AttackTypeId = (int)AttackTypes.Melee,
+                Complexity = 1
+            }, cts.Token);
 
-        var result = await _heroService.GetHero(255, cts.Token);
+            Assert.True(result.IsSuccessful);
+            Assert.Null(result.Error);
+            Assert.Single((List<QueryHeroResponse>)result.Data!);
+        }
 
-        Assert.False(result.IsSuccessful);
-        Assert.NotNull(result.Error);
-        Assert.True(result.GetStatusCode() == (int)HttpStatusCode.NotFound);
-        Assert.Equal(ResourceKeys.HeroCouldNotBeFound, result.Error.Title);
-    }
+        [Fact]
+        [Trait($"{nameof(HeroV1Service)}", $"{nameof(ServiceTests)}/{nameof(HeroV1Service.GetHero)}/id")]
+        public async Task GetHeroes_WithId_WhenCacheHasNoData_ReturnsHeroesNotFound()
+        {
+            using var cts = new CancellationTokenSource();
 
-    [Fact]
-    [Trait("Heroes", $"{nameof(_heroService.GetHero)}/name")]
-    public async Task GetHeroes_WithName_WhenCacheHasNoData_ReturnsHeroesNotFound()
-    {
-        using var cts = new CancellationTokenSource();
+            ApiResponse result = await _heroService.GetHero(255, cts.Token);
 
-        var result = await _heroService.GetHero(TestValues.TestHero.Name, cts.Token);
+            Assert.False(result.IsSuccessful);
+            Assert.NotNull(result.Error);
+            Assert.True(result.GetStatusCode() == (int)HttpStatusCode.NotFound);
+            Assert.Equal(ResourceKeys.HeroesCouldNotBeFound, result.Error.Title);
+        }
 
-        Assert.False(result.IsSuccessful);
-        Assert.NotNull(result.Error);
-        Assert.True(result.GetStatusCode() == (int)HttpStatusCode.NotFound);
-        Assert.Equal(ResourceKeys.HeroesCouldNotBeFound, result.Error.Title);
-    }
+        [Fact]
+        [Trait($"{nameof(HeroV1Service)}", $"{nameof(ServiceTests)}/{nameof(HeroV1Service.GetHero)}/id")]
+        public async Task GetHeroes_WithId_WhenMatchingHeroInCache_ReturnsData()
+        {
+            using var cts = new CancellationTokenSource();
 
-    [Fact]
-    [Trait("Heroes", $"{nameof(_heroService.GetHero)}/name")]
-    public async Task GetHeroes_WithName_WhenMatchingHeroInCache_ReturnsData()
-    {
-        using var cts = new CancellationTokenSource();
+            _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
 
-        _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
+            ApiResponse result = await _heroService.GetHero(TestValues.TestHero.Id, cts.Token);
 
-        var result = await _heroService.GetHero((byte)TestValues.TestHero.Id, cts.Token);
+            Assert.True(result.IsSuccessful);
+            Assert.Null(result.Error);
+            Assert.NotNull((GetHeroResponse)result.Data!);
+        }
 
-        Assert.True(result.IsSuccessful);
-        Assert.Null(result.Error);
-        Assert.NotNull((GetHeroResponse)result.Data!);
-    }
+        [Fact]
+        [Trait($"{nameof(HeroV1Service)}", $"{nameof(ServiceTests)}/{nameof(HeroV1Service.GetHero)}/id")]
+        public async Task GetHeroes_WithId_WhenNoMatchingHeroInCache_ReturnsHeroNotFOund()
+        {
+            using var cts = new CancellationTokenSource();
 
-    [Fact]
-    [Trait("Heroes", $"{nameof(_heroService.GetHero)}/name")]
-    public async Task GetHeroes_WithName_WhenNoMatchingHeroInCache_ReturnsHeroNotFound()
-    {
-        using var cts = new CancellationTokenSource();
+            _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
 
-        _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
+            ApiResponse result = await _heroService.GetHero(255, cts.Token);
 
-        var result = await _heroService.GetHero("test1hero", cts.Token);
+            Assert.False(result.IsSuccessful);
+            Assert.NotNull(result.Error);
+            Assert.True(result.GetStatusCode() == (int)HttpStatusCode.NotFound);
+            Assert.Equal(ResourceKeys.HeroCouldNotBeFound, result.Error.Title);
+        }
 
-        Assert.False(result.IsSuccessful);
-        Assert.NotNull(result.Error);
-        Assert.True(result.GetStatusCode() == (int)HttpStatusCode.NotFound);
-        Assert.Equal(ResourceKeys.HeroCouldNotBeFound, result.Error.Title);
-    }
+        [Fact]
+        [Trait($"{nameof(HeroV1Service)}", $"{nameof(ServiceTests)}/{nameof(HeroV1Service.GetHero)}/name")]
+        public async Task GetHeroes_WithName_WhenCacheHasNoData_ReturnsHeroesNotFound()
+        {
+            using var cts = new CancellationTokenSource();
 
-    [Fact]
-    [Trait("Heroes", $"{nameof(_heroService.GetHero)}/name")]
-    public async Task GetHeroes_WithName_WhenUsingDifferentCase_ReturnsData()
-    {
-        using var cts = new CancellationTokenSource();
+            ApiResponse result = await _heroService.GetHero(TestValues.TestHero.Name, cts.Token);
 
-        _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
+            Assert.False(result.IsSuccessful);
+            Assert.NotNull(result.Error);
+            Assert.True(result.GetStatusCode() == (int)HttpStatusCode.NotFound);
+            Assert.Equal(ResourceKeys.HeroesCouldNotBeFound, result.Error.Title);
+        }
 
-        var result = await _heroService.GetHero(TestValues.TestHero.Name.ToUpper(), cts.Token);
+        [Fact]
+        [Trait($"{nameof(HeroV1Service)}", $"{nameof(ServiceTests)}/{nameof(HeroV1Service.GetHero)}/name")]
+        public async Task GetHeroes_WithName_WhenMatchingHeroInCache_ReturnsData()
+        {
+            using var cts = new CancellationTokenSource();
 
-        Assert.True(result.IsSuccessful);
-        Assert.Null(result.Error);
-        Assert.NotNull((GetHeroResponse)result.Data!);
-    }
+            _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
 
-    [Fact]
-    [Trait("Heroes", $"{nameof(_heroService.GetPageFilters)}")]
-    public async Task GetPageFilters_ReturnsFilters()
-    {
-        using var cts = new CancellationTokenSource();
+            ApiResponse result = await _heroService.GetHero(TestValues.TestHero.Name, cts.Token);
 
-        var result = await _heroService.GetPageFilters(cts.Token);
+            Assert.True(result.IsSuccessful);
+            Assert.Null(result.Error);
+            Assert.NotNull((GetHeroResponse)result.Data!);
+        }
 
-        GetHeroPageFilterResponse response = (GetHeroPageFilterResponse)result.Data!;
+        [Fact]
+        [Trait($"{nameof(HeroV1Service)}", $"{nameof(ServiceTests)}/{nameof(HeroV1Service.GetHero)}/name")]
+        public async Task GetHeroes_WithName_WhenNoMatchingHeroInCache_ReturnsHeroNotFound()
+        {
+            using var cts = new CancellationTokenSource();
 
-        Assert.True(result.IsSuccessful);
-        Assert.NotNull(response);
+            _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
 
-        Assert.Equal(response.AttributeTypes.Count, Enum.GetValues<AttributeTypes>().Length);
-        Assert.Equal(response.AttackTypes.Count, Enum.GetValues<AttackTypes>().Length);
-        Assert.Equal(response.StatTypes.Count, Enum.GetValues<StatTypes>().Length);
+            ApiResponse result = await _heroService.GetHero("test1hero", cts.Token);
+
+            Assert.False(result.IsSuccessful);
+            Assert.NotNull(result.Error);
+            Assert.True(result.GetStatusCode() == (int)HttpStatusCode.NotFound);
+            Assert.Equal(ResourceKeys.HeroCouldNotBeFound, result.Error.Title);
+        }
+
+        [Fact]
+        [Trait($"{nameof(HeroV1Service)}", $"{nameof(ServiceTests)}/{nameof(HeroV1Service.GetHero)}/name")]
+        public async Task GetHeroes_WithName_WhenUsingDifferentCase_ReturnsData()
+        {
+            using var cts = new CancellationTokenSource();
+
+            _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
+
+            ApiResponse result = await _heroService.GetHero(TestValues.TestHero.Name.ToUpper(), cts.Token);
+
+            Assert.True(result.IsSuccessful);
+            Assert.Null(result.Error);
+            Assert.NotNull((GetHeroResponse)result.Data!);
+        }
+
+        [Fact]
+        [Trait($"{nameof(HeroV1Service)}", $"{nameof(ServiceTests)}/{nameof(HeroV1Service.GetPageFilters)}")]
+        public async Task GetPageFilters_ReturnsFilters()
+        {
+            using var cts = new CancellationTokenSource();
+
+            ApiResponse result = await _heroService.GetPageFilters(cts.Token);
+
+            GetHeroPageFilterResponse response = (GetHeroPageFilterResponse)result.Data!;
+
+            Assert.True(result.IsSuccessful);
+            Assert.NotNull(response);
+
+            Assert.Equal(response.AttributeTypes.Count, Enum.GetValues<AttributeTypes>().Length);
+            Assert.Equal(response.AttackTypes.Count, Enum.GetValues<AttackTypes>().Length);
+            Assert.Equal(response.StatTypes.Count, Enum.GetValues<StatTypes>().Length);
+        }
     }
 
     private static class TestValues

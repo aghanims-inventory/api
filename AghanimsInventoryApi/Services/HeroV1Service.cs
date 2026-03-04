@@ -54,7 +54,7 @@ public class HeroV1Service
         return ApiResponse.Successful(HttpStatusCode.OK, response);
     }
 
-    public async Task<ApiResponse> GetHero(byte id, CancellationToken cancellationToken)
+    public async Task<ApiResponse> GetHero(int id, CancellationToken cancellationToken)
     {
         _memoryCache.TryGetValue(CacheKeys.HeroCache, out IEnumerable<Hero>? heroes);
 
