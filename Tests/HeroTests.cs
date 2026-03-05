@@ -65,29 +65,36 @@ public class HeroTests
         {
             using var cts = new CancellationTokenSource();
 
-            ApiResponse result = await _heroService.QueryHeroes(new QueryHeroRequest(), cts.Token);
+            ApiResponse<List<QueryHeroResponse>> result = await _heroService.QueryHeroes(new QueryHeroRequest(), cts.Token);
 
             Assert.False(result.IsSuccessful);
             Assert.Null(result.Data);
             Assert.NotNull(result.Error);
-
-            Assert.NotNull(result.Error);
-            Assert.True(result.GetStatusCode() == (int)HttpStatusCode.NotFound);
+            Assert.Equal((int)HttpStatusCode.NotFound, result.GetStatusCode());
             Assert.Equal(ResourceKeys.HeroesCouldNotBeFound, result.Error.Title);
         }
 
         [Fact]
         [Trait($"{nameof(HeroV1Service)}", $"{nameof(ServiceTests)}/{nameof(HeroV1Service.QueryHeroes)}")]
-        public async Task QueryHeroes_WhenCacheHasOneHero_ReturnsSuccess()
+        public async Task QueryHeroes_WhenCacheHasAtLeastOneHero_ReturnsSuccess()
         {
             using var cts = new CancellationTokenSource();
 
-            _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
+            List<Hero> heroes = new()
+            {
+                CreateHero(1, "alchemist", "Alchemist", (byte)AttributeTypes.Strength, (byte)AttackTypes.Melee, 1),
+                CreateHero(2, "bane", "Bane", (byte)AttributeTypes.Universal, (byte)AttackTypes.Ranged, 2)
+            };
 
-            ApiResponse result = await _heroService.QueryHeroes(new QueryHeroRequest(), cts.Token);
+            _memoryCache.Set(CacheKeys.HeroCache, heroes);
+
+            ApiResponse<List<QueryHeroResponse>> result = await _heroService.QueryHeroes(new QueryHeroRequest(), cts.Token);
 
             Assert.True(result.IsSuccessful);
             Assert.Null(result.Error);
+            Assert.Equal((int)HttpStatusCode.OK, result.GetStatusCode());
+            Assert.NotNull(result.Data);
+            Assert.Equal(2, result.Data.Count);
         }
 
         [Fact]
@@ -96,16 +103,24 @@ public class HeroTests
         {
             using var cts = new CancellationTokenSource();
 
-            _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
+            List<Hero> heroes = new()
+            {
+                CreateHero(1, "alchemist", "Alchemist", (byte)AttributeTypes.Strength, (byte)AttackTypes.Melee, 1),
+                CreateHero(2, "bane", "Bane", (byte)AttributeTypes.Universal, (byte)AttackTypes.Ranged, 2)
+            };
 
-            ApiResponse result = await _heroService.QueryHeroes(new QueryHeroRequest()
+            _memoryCache.Set(CacheKeys.HeroCache, heroes);
+
+            ApiResponse<List<QueryHeroResponse>> result = await _heroService.QueryHeroes(new QueryHeroRequest()
             {
                 AttributeId = (int)AttributeTypes.Intelligence
             }, cts.Token);
 
             Assert.True(result.IsSuccessful);
             Assert.Null(result.Error);
-            Assert.Empty((List<QueryHeroResponse>)result.Data!);
+            Assert.Equal((int)HttpStatusCode.OK, result.GetStatusCode());
+            Assert.NotNull(result.Data);
+            Assert.Empty(result.Data);
         }
 
         [Fact]
@@ -114,16 +129,24 @@ public class HeroTests
         {
             using var cts = new CancellationTokenSource();
 
-            _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
+            List<Hero> heroes = new()
+            {
+                CreateHero(1, "alchemist", "Alchemist", (byte)AttributeTypes.Strength, (byte)AttackTypes.Melee, 1),
+                CreateHero(2, "bane", "Bane", (byte)AttributeTypes.Universal, (byte)AttackTypes.Ranged, 2)
+            };
 
-            ApiResponse result = await _heroService.QueryHeroes(new QueryHeroRequest()
+            _memoryCache.Set(CacheKeys.HeroCache, heroes);
+
+            ApiResponse<List<QueryHeroResponse>> result = await _heroService.QueryHeroes(new QueryHeroRequest()
             {
                 AttributeId = (int)AttributeTypes.Strength
             }, cts.Token);
 
             Assert.True(result.IsSuccessful);
             Assert.Null(result.Error);
-            Assert.Single((List<QueryHeroResponse>)result.Data!);
+            Assert.Equal((int)HttpStatusCode.OK, result.GetStatusCode());
+            Assert.NotNull(result.Data);
+            Assert.Single(result.Data);
         }
 
         [Fact]
@@ -132,16 +155,24 @@ public class HeroTests
         {
             using var cts = new CancellationTokenSource();
 
-            _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
+            List<Hero> heroes = new()
+            {
+                CreateHero(1, "alchemist", "Alchemist", (byte)AttributeTypes.Strength, (byte)AttackTypes.Melee, 1),
+                CreateHero(2, "bane", "Bane", (byte)AttributeTypes.Universal, (byte)AttackTypes.Ranged, 2)
+            };
 
-            ApiResponse result = await _heroService.QueryHeroes(new QueryHeroRequest()
+            _memoryCache.Set(CacheKeys.HeroCache, heroes);
+
+            ApiResponse<List<QueryHeroResponse>> result = await _heroService.QueryHeroes(new QueryHeroRequest()
             {
                 AttackTypeId = (int)AttackTypes.Melee
             }, cts.Token);
 
             Assert.True(result.IsSuccessful);
             Assert.Null(result.Error);
-            Assert.Single((List<QueryHeroResponse>)result.Data!);
+            Assert.Equal((int)HttpStatusCode.OK, result.GetStatusCode());
+            Assert.NotNull(result.Data);
+            Assert.Single(result.Data);
         }
 
         [Fact]
@@ -150,16 +181,24 @@ public class HeroTests
         {
             using var cts = new CancellationTokenSource();
 
-            _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
+            List<Hero> heroes = new()
+            {
+                CreateHero(1, "alchemist", "Alchemist", (byte)AttributeTypes.Strength, (byte)AttackTypes.Melee, 1),
+                CreateHero(2, "bane", "Bane", (byte)AttributeTypes.Universal, (byte)AttackTypes.Ranged, 2)
+            };
 
-            ApiResponse result = await _heroService.QueryHeroes(new QueryHeroRequest()
+            _memoryCache.Set(CacheKeys.HeroCache, heroes);
+
+            ApiResponse<List<QueryHeroResponse>> result = await _heroService.QueryHeroes(new QueryHeroRequest()
             {
                 Complexity = 1
             }, cts.Token);
 
             Assert.True(result.IsSuccessful);
             Assert.Null(result.Error);
-            Assert.Single((List<QueryHeroResponse>)result.Data!);
+            Assert.Equal((int)HttpStatusCode.OK, result.GetStatusCode());
+            Assert.NotNull(result.Data);
+            Assert.Single(result.Data);
         }
 
         [Fact]
@@ -168,9 +207,15 @@ public class HeroTests
         {
             using var cts = new CancellationTokenSource();
 
-            _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
+            List<Hero> heroes = new()
+            {
+                CreateHero(1, "alchemist", "Alchemist", (byte)AttributeTypes.Strength, (byte)AttackTypes.Melee, 1),
+                CreateHero(2, "bane", "Bane", (byte)AttributeTypes.Universal, (byte)AttackTypes.Ranged, 2)
+            };
 
-            ApiResponse result = await _heroService.QueryHeroes(new QueryHeroRequest()
+            _memoryCache.Set(CacheKeys.HeroCache, heroes);
+
+            ApiResponse<List<QueryHeroResponse>> result = await _heroService.QueryHeroes(new QueryHeroRequest()
             {
                 AttributeId = (int)AttributeTypes.Strength,
                 AttackTypeId = (int)AttackTypes.Melee,
@@ -179,7 +224,9 @@ public class HeroTests
 
             Assert.True(result.IsSuccessful);
             Assert.Null(result.Error);
-            Assert.Single((List<QueryHeroResponse>)result.Data!);
+            Assert.Equal((int)HttpStatusCode.OK, result.GetStatusCode());
+            Assert.NotNull(result.Data);
+            Assert.Single(result.Data);
         }
 
         [Fact]
@@ -188,11 +235,11 @@ public class HeroTests
         {
             using var cts = new CancellationTokenSource();
 
-            ApiResponse result = await _heroService.GetHero(255, cts.Token);
+            ApiResponse<GetHeroResponse> result = await _heroService.GetHero(255, cts.Token);
 
             Assert.False(result.IsSuccessful);
             Assert.NotNull(result.Error);
-            Assert.True(result.GetStatusCode() == (int)HttpStatusCode.NotFound);
+            Assert.Equal((int)HttpStatusCode.NotFound, result.GetStatusCode());
             Assert.Equal(ResourceKeys.HeroesCouldNotBeFound, result.Error.Title);
         }
 
@@ -202,13 +249,20 @@ public class HeroTests
         {
             using var cts = new CancellationTokenSource();
 
-            _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
+            List<Hero> heroes = new()
+            {
+                CreateHero(1, "alchemist", "Alchemist", (byte)AttributeTypes.Strength, (byte)AttackTypes.Melee, 1),
+                CreateHero(2, "bane", "Bane", (byte)AttributeTypes.Universal, (byte)AttackTypes.Ranged, 2)
+            };
 
-            ApiResponse result = await _heroService.GetHero(TestValues.TestHero.Id, cts.Token);
+            _memoryCache.Set(CacheKeys.HeroCache, heroes);
+
+            ApiResponse<GetHeroResponse> result = await _heroService.GetHero(heroes.First().Id, cts.Token);
 
             Assert.True(result.IsSuccessful);
             Assert.Null(result.Error);
-            Assert.NotNull((GetHeroResponse)result.Data!);
+            Assert.Equal((int)HttpStatusCode.OK, result.GetStatusCode());
+            Assert.NotNull(result.Data);
         }
 
         [Fact]
@@ -217,13 +271,19 @@ public class HeroTests
         {
             using var cts = new CancellationTokenSource();
 
-            _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
+            List<Hero> heroes = new()
+            {
+                CreateHero(1, "alchemist", "Alchemist", (byte)AttributeTypes.Strength, (byte)AttackTypes.Melee, 1),
+                CreateHero(2, "bane", "Bane", (byte)AttributeTypes.Universal, (byte)AttackTypes.Ranged, 2)
+            };
 
-            ApiResponse result = await _heroService.GetHero(255, cts.Token);
+            _memoryCache.Set(CacheKeys.HeroCache, heroes);
+
+            ApiResponse<GetHeroResponse> result = await _heroService.GetHero(255, cts.Token);
 
             Assert.False(result.IsSuccessful);
             Assert.NotNull(result.Error);
-            Assert.True(result.GetStatusCode() == (int)HttpStatusCode.NotFound);
+            Assert.Equal((int)HttpStatusCode.NotFound, result.GetStatusCode());
             Assert.Equal(ResourceKeys.HeroCouldNotBeFound, result.Error.Title);
         }
 
@@ -233,11 +293,11 @@ public class HeroTests
         {
             using var cts = new CancellationTokenSource();
 
-            ApiResponse result = await _heroService.GetHero(TestValues.TestHero.Name, cts.Token);
+            ApiResponse<GetHeroResponse> result = await _heroService.GetHero("Alchemist", cts.Token);
 
             Assert.False(result.IsSuccessful);
             Assert.NotNull(result.Error);
-            Assert.True(result.GetStatusCode() == (int)HttpStatusCode.NotFound);
+            Assert.Equal((int)HttpStatusCode.NotFound, result.GetStatusCode());
             Assert.Equal(ResourceKeys.HeroesCouldNotBeFound, result.Error.Title);
         }
 
@@ -247,13 +307,20 @@ public class HeroTests
         {
             using var cts = new CancellationTokenSource();
 
-            _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
+            List<Hero> heroes = new()
+            {
+                CreateHero(1, "alchemist", "Alchemist", (byte)AttributeTypes.Strength, (byte)AttackTypes.Melee, 1),
+                CreateHero(2, "bane", "Bane", (byte)AttributeTypes.Universal, (byte)AttackTypes.Ranged, 2)
+            };
 
-            ApiResponse result = await _heroService.GetHero(TestValues.TestHero.Name, cts.Token);
+            _memoryCache.Set(CacheKeys.HeroCache, heroes);
+
+            ApiResponse<GetHeroResponse> result = await _heroService.GetHero(heroes.First().Name, cts.Token);
 
             Assert.True(result.IsSuccessful);
             Assert.Null(result.Error);
-            Assert.NotNull((GetHeroResponse)result.Data!);
+            Assert.Equal((int)HttpStatusCode.OK, result.GetStatusCode());
+            Assert.NotNull(result.Data);
         }
 
         [Fact]
@@ -262,13 +329,19 @@ public class HeroTests
         {
             using var cts = new CancellationTokenSource();
 
-            _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
+            List<Hero> heroes = new()
+            {
+                CreateHero(1, "alchemist", "Alchemist", (byte)AttributeTypes.Strength, (byte)AttackTypes.Melee, 1),
+                CreateHero(2, "bane", "Bane", (byte)AttributeTypes.Universal, (byte)AttackTypes.Ranged, 2)
+            };
 
-            ApiResponse result = await _heroService.GetHero("test1hero", cts.Token);
+            _memoryCache.Set(CacheKeys.HeroCache, heroes);
+
+            ApiResponse<GetHeroResponse> result = await _heroService.GetHero("test1hero", cts.Token);
 
             Assert.False(result.IsSuccessful);
             Assert.NotNull(result.Error);
-            Assert.True(result.GetStatusCode() == (int)HttpStatusCode.NotFound);
+            Assert.Equal((int)HttpStatusCode.NotFound, result.GetStatusCode());
             Assert.Equal(ResourceKeys.HeroCouldNotBeFound, result.Error.Title);
         }
 
@@ -278,13 +351,20 @@ public class HeroTests
         {
             using var cts = new CancellationTokenSource();
 
-            _memoryCache.Set(CacheKeys.HeroCache, TestValues.TestHeroes);
+            List<Hero> heroes = new()
+            {
+                CreateHero(1, "alchemist", "Alchemist", (byte)AttributeTypes.Strength, (byte)AttackTypes.Melee, 1),
+                CreateHero(2, "bane", "Bane", (byte)AttributeTypes.Universal, (byte)AttackTypes.Ranged, 2)
+            };
 
-            ApiResponse result = await _heroService.GetHero(TestValues.TestHero.Name.ToUpper(), cts.Token);
+            _memoryCache.Set(CacheKeys.HeroCache, heroes);
+
+            ApiResponse<GetHeroResponse> result = await _heroService.GetHero(heroes.First().Name.ToUpper(), cts.Token);
 
             Assert.True(result.IsSuccessful);
             Assert.Null(result.Error);
-            Assert.NotNull((GetHeroResponse)result.Data!);
+            Assert.Equal((int)HttpStatusCode.OK, result.GetStatusCode());
+            Assert.NotNull(result.Data);
         }
 
         [Fact]
@@ -293,7 +373,7 @@ public class HeroTests
         {
             using var cts = new CancellationTokenSource();
 
-            ApiResponse result = await _heroService.GetPageFilters(cts.Token);
+            ApiResponse<GetHeroPageFilterResponse> result = await _heroService.GetPageFilters(cts.Token);
 
             GetHeroPageFilterResponse response = (GetHeroPageFilterResponse)result.Data!;
 
@@ -306,36 +386,18 @@ public class HeroTests
         }
     }
 
-    private static class TestValues
+    private static Hero CreateHero(int id, string name, string displayName, byte attributeId, byte attackTypeId, int complexity, string iconUrl = "", string imageUrl = "")
     {
-        public static readonly Hero TestHero = new()
+        return new Hero
         {
-            Id = 1,
-            Name = "alchemist",
-            DisplayName = "Alchemist",
-            IconUrl = string.Empty,
-            ImageUrl = string.Empty,
-            AttributeId = (int)AttributeTypes.Strength,
-            AttackTypeId = (int)AttackTypes.Melee,
-            Complexity = 1
-        };
-
-        public static readonly Hero TestHero2 = new()
-        {
-            Id = 2,
-            Name = "bane",
-            DisplayName = "Bane",
-            IconUrl = string.Empty,
-            ImageUrl = string.Empty,
-            AttributeId = (int)AttributeTypes.Universal,
-            AttackTypeId = (int)AttackTypes.Ranged,
-            Complexity = 2
-        };
-
-        public static readonly List<Hero> TestHeroes = new List<Hero>()
-        {
-            TestHero,
-            TestHero2
+            Id = id,
+            Name = name,
+            DisplayName = displayName,
+            IconUrl = iconUrl,
+            ImageUrl = imageUrl,
+            AttributeId = attributeId,
+            AttackTypeId = attackTypeId,
+            Complexity = complexity
         };
     }
 }

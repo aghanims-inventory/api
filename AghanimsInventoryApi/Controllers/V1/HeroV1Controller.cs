@@ -20,40 +20,40 @@ public class HeroV1Controller : ControllerBase
     }
 
     [HttpGet("filters")]
-    [ProducesResponseType(typeof(ApiResponse<GetHeroPageFilterResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResponse<GetHeroPageFilterResponse>))]
     public async Task<IActionResult> PageFilters(CancellationToken cancellationToken)
     {
-        ApiResponse response = await _heroV1Service.GetPageFilters(cancellationToken);
+        ApiResponse<GetHeroPageFilterResponse> response = await _heroV1Service.GetPageFilters(cancellationToken);
 
         return StatusCode(response.GetStatusCode(), response);
     }
 
     [HttpGet("{id:int}")]
-    [ProducesResponseType(typeof(ApiResponse<GetHeroResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResponse<GetHeroResponse>))]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(NoData))]
     public async Task<IActionResult> GetHero([FromRoute] int id, CancellationToken cancellationToken)
     {
-        ApiResponse response = await _heroV1Service.GetHero(id, cancellationToken);
+        ApiResponse<GetHeroResponse> response = await _heroV1Service.GetHero(id, cancellationToken);
 
         return StatusCode(response.GetStatusCode(), response);
     }
 
     [HttpGet("{name}")]
-    [ProducesResponseType(typeof(ApiResponse<GetHeroResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResponse<GetHeroResponse>))]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(NoData))]
     public async Task<IActionResult> GetHero([FromRoute] string name, CancellationToken cancellationToken)
     {
-        ApiResponse response = await _heroV1Service.GetHero(name, cancellationToken);
+        ApiResponse<GetHeroResponse> response = await _heroV1Service.GetHero(name, cancellationToken);
         
         return StatusCode(response.GetStatusCode(), response);
     }
 
     [HttpGet("")]
-    [ProducesResponseType(typeof(ApiResponse<QueryHeroResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ApiResponse<QueryHeroResponse>))]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(NoData))]
     public async Task<IActionResult> QueryHeroes([FromQuery] QueryHeroRequest request, CancellationToken cancellationToken)
     {
-        ApiResponse response = await _heroV1Service.QueryHeroes(request, cancellationToken);
+        ApiResponse<List<QueryHeroResponse>> response = await _heroV1Service.QueryHeroes(request, cancellationToken);
 
         return StatusCode(response.GetStatusCode(), response);
     }

@@ -6,7 +6,6 @@ using AghanimsInventoryApi.Models.V1.RequestModels;
 using AghanimsInventoryApi.Models.V1.ResponseModels;
 using AghanimsInventoryApi.Models.V1.ResponseModels.Common;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace AghanimsInventoryApi.Services;
@@ -24,7 +23,7 @@ public class HeroV1Service
         _memoryCache = memoryCache;
     }
 
-    public async Task<ApiResponse> GetPageFilters(CancellationToken cancellationToken)
+    public async Task<ApiResponse<GetHeroPageFilterResponse>> GetPageFilters(CancellationToken cancellationToken)
     {
         GetHeroPageFilterResponse response = new()
         {
@@ -51,10 +50,10 @@ public class HeroV1Service
                 .ToList()
         };
 
-        return ApiResponse.Successful(HttpStatusCode.OK, response);
+        return ApiResponse<GetHeroPageFilterResponse>.Successful(HttpStatusCode.OK, response);
     }
 
-    public async Task<ApiResponse> GetHero(int id, CancellationToken cancellationToken)
+    public async Task<ApiResponse<GetHeroResponse>> GetHero(int id, CancellationToken cancellationToken)
     {
         _memoryCache.TryGetValue(CacheKeys.HeroCache, out IEnumerable<Hero>? heroes);
 
@@ -62,7 +61,7 @@ public class HeroV1Service
         {
             _logger.LogError("Heroes could not be found.");
 
-            return ApiResponse.Unsuccessful(HttpStatusCode.NotFound, new ProblemDetails()
+            return ApiResponse<GetHeroResponse>.Unsuccessful(HttpStatusCode.NotFound, new ProblemDetails()
             {
                 Status = StatusCodes.Status404NotFound,
                 Title = ResourceKeys.HeroesCouldNotBeFound,
@@ -74,7 +73,7 @@ public class HeroV1Service
 
         if (hero is null)
         {
-            return ApiResponse.Unsuccessful(HttpStatusCode.NotFound, new ProblemDetails()
+            return ApiResponse<GetHeroResponse>.Unsuccessful(HttpStatusCode.NotFound, new ProblemDetails()
             {
                 Status = StatusCodes.Status404NotFound,
                 Title = ResourceKeys.HeroCouldNotBeFound,
@@ -96,10 +95,10 @@ public class HeroV1Service
             FormattedAttackType = ((AttackTypes)hero.AttackTypeId).ToString()
         };
 
-        return ApiResponse.Successful(HttpStatusCode.OK, response);
+        return ApiResponse<GetHeroResponse>.Successful(HttpStatusCode.OK, response);
     }
 
-    public async Task<ApiResponse> GetHero(string name, CancellationToken cancellationToken)
+    public async Task<ApiResponse<GetHeroResponse>> GetHero(string name, CancellationToken cancellationToken)
     {
         _memoryCache.TryGetValue(CacheKeys.HeroCache, out IEnumerable<Hero>? heroes);
 
@@ -107,7 +106,7 @@ public class HeroV1Service
         {
             _logger.LogError("Heroes could not be found.");
 
-            return ApiResponse.Unsuccessful(HttpStatusCode.NotFound, new ProblemDetails()
+            return ApiResponse<GetHeroResponse>.Unsuccessful(HttpStatusCode.NotFound, new ProblemDetails()
             {
                 Status = StatusCodes.Status404NotFound,
                 Title = ResourceKeys.HeroesCouldNotBeFound,
@@ -115,11 +114,11 @@ public class HeroV1Service
             });
         }
 
-        var hero = heroes.FirstOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        Hero? hero = heroes.FirstOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
         if (hero is null)
         {
-            return ApiResponse.Unsuccessful(HttpStatusCode.NotFound, new ProblemDetails()
+            return ApiResponse<GetHeroResponse>.Unsuccessful(HttpStatusCode.NotFound, new ProblemDetails()
             {
                 Status = StatusCodes.Status404NotFound,
                 Title = ResourceKeys.HeroCouldNotBeFound,
@@ -141,10 +140,10 @@ public class HeroV1Service
             FormattedAttackType = ((AttackTypes)hero.AttackTypeId).ToString()
         };
 
-        return ApiResponse.Successful(HttpStatusCode.OK, response);
+        return ApiResponse<GetHeroResponse>.Successful(HttpStatusCode.OK, response);
     }
 
-    public async Task<ApiResponse> QueryHeroes(QueryHeroRequest request, CancellationToken cancellationToken)
+    public async Task<ApiResponse<List<QueryHeroResponse>>> QueryHeroes(QueryHeroRequest request, CancellationToken cancellationToken)
     {
         _memoryCache.TryGetValue(CacheKeys.HeroCache, out IEnumerable<Hero>? heroes);
 
@@ -152,7 +151,7 @@ public class HeroV1Service
         {
             _logger.LogError("Heroes could not be found.");
 
-            return ApiResponse.Unsuccessful(HttpStatusCode.NotFound, new ProblemDetails()
+            return ApiResponse<List<QueryHeroResponse>>.Unsuccessful(HttpStatusCode.NotFound, new ProblemDetails()
             {
                 Status = StatusCodes.Status404NotFound,
                 Title = ResourceKeys.HeroesCouldNotBeFound,
@@ -188,6 +187,6 @@ public class HeroV1Service
             FormattedAttackType = ((AttackTypes)x.AttackTypeId).ToString()
         }).ToList();
 
-        return ApiResponse.Successful(HttpStatusCode.OK, response);
+        return ApiResponse<List<QueryHeroResponse>>.Successful(HttpStatusCode.OK, response);
     }
 }
