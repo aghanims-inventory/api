@@ -15,7 +15,6 @@ namespace ApiTests.HeroTests.ServiceTests;
 public class GetPageFiltersTests
 {
     private readonly Mock<ILogger<HeroV1Service>> _logger;
-    private readonly AghanimsInventoryDbContext _dbContext;
     private readonly IMemoryCache _memoryCache;
     private readonly HeroV1Service _heroService;
 
@@ -28,22 +27,7 @@ public class GetPageFiltersTests
 
         _memoryCache = Create.MockedMemoryCache();
 
-        _dbContext = CreateMockDbContext();
-
         _heroService = CreateHeroV1Service();
-    }
-
-    private AghanimsInventoryDbContext CreateMockDbContext()
-    {
-        DbContextOptions<AghanimsInventoryDbContext> options = new DbContextOptionsBuilder<AghanimsInventoryDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-
-        TestDbContext context = new(options);
-
-        context.Database.EnsureCreated();
-
-        return context;
     }
 
     private HeroV1Service CreateHeroV1Service()

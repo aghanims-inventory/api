@@ -64,7 +64,7 @@ public class HeroV1Service
             return ApiResponse<GetHeroResponse>.Unsuccessful(HttpStatusCode.NotFound, new ProblemDetails()
             {
                 Status = StatusCodes.Status404NotFound,
-                Title = ResourceKeys.HeroesCouldNotBeFound,
+                Title = ResourceKeys.Titles.ProblemOccurred,
                 Detail = ResourceKeys.HeroesCouldNotBeFound
             });
         }
@@ -76,7 +76,7 @@ public class HeroV1Service
             return ApiResponse<GetHeroResponse>.Unsuccessful(HttpStatusCode.NotFound, new ProblemDetails()
             {
                 Status = StatusCodes.Status404NotFound,
-                Title = ResourceKeys.HeroCouldNotBeFound,
+                Title = ResourceKeys.Titles.ProblemOccurred,
                 Detail = ResourceKeys.HeroCouldNotBeFound
             });
         }
@@ -109,7 +109,7 @@ public class HeroV1Service
             return ApiResponse<GetHeroResponse>.Unsuccessful(HttpStatusCode.NotFound, new ProblemDetails()
             {
                 Status = StatusCodes.Status404NotFound,
-                Title = ResourceKeys.HeroesCouldNotBeFound,
+                Title = ResourceKeys.Titles.ProblemOccurred,
                 Detail = ResourceKeys.HeroesCouldNotBeFound
             });
         }
@@ -121,7 +121,7 @@ public class HeroV1Service
             return ApiResponse<GetHeroResponse>.Unsuccessful(HttpStatusCode.NotFound, new ProblemDetails()
             {
                 Status = StatusCodes.Status404NotFound,
-                Title = ResourceKeys.HeroCouldNotBeFound,
+                Title = ResourceKeys.Titles.ProblemOccurred,
                 Detail = ResourceKeys.HeroCouldNotBeFound
             });
         }
@@ -154,7 +154,7 @@ public class HeroV1Service
             return ApiResponse<List<QueryHeroResponse>>.Unsuccessful(HttpStatusCode.NotFound, new ProblemDetails()
             {
                 Status = StatusCodes.Status404NotFound,
-                Title = ResourceKeys.HeroesCouldNotBeFound,
+                Title = ResourceKeys.Titles.ProblemOccurred,
                 Detail = ResourceKeys.HeroesCouldNotBeFound
             });
         }
